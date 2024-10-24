@@ -1,0 +1,39 @@
+buggy_type: Reentrancy_test
+key_code: jump, call, interrupt, signal
+reason: The fallback mechanism of smart contracts, Contracts expose external calls in their interface. These external calls can be hijacked by attackers to call a function within the contract itself several times, thereby performing unexpected operations within the contract itself.
+result: Caused massive losses, directly leading to an Ethereum hard fork.
+attack_method: Attacker can exploit the external call to re-enter the called function before the program execution ends to perform dangerous operations.
+solution: Adopt the Checks-Effects-Interactions pattern; use the safer transfer or send functions to send ether; use mutex locks; adopt the non_Reentrant modifier from the Reentrancy_Guard contract; use the pull payment model instead of pushing funds to a receiver.
+code: uint256 uint_2 =0; function function_2() public{ require(uint_2<=5); if( ! (msg.sender.send(10 ether) ) ){revert();}uint_2 += 1;}
+
+buggy_type: BadRandomness
+key_code: block.number, block.difficulty, block.blockhash, block.timestamp
+reason: Users can predict certain random numbers based on publicly available information because of the transparency and determinism of smart contracts.
+result: Loss ether.
+attack_method: Attackers can precompute the results of pseudorandom numbers.
+solution: Generate and verify random numbers separately through asynchronous processing. Using a decentralized oracle service to provide random numbers.
+code: function function_1(uint unit_1) public { uint unit_2 = uint(keccak256(abi.encodePacked(blockhash(block.number - 1), block.timestamp)));if (unit_1 == unit_2) {(bool bool_1, ) = msg.sender.call{value: 1 ether}(""); require(bool_1, "Failed to send Ether"); }}
+
+buggy_type: Denial_of_Service
+key_code: require, msg.sender, msg.value
+reason: The state of the smart contract depends on an external function with no protection against repeated failures. The transfer exceeds the gas limit.
+result: Leaving the contract inoperable for a small period of time or permanently.
+attack_method: Users transaction will fail continuously due to the fallback() function of attack contract. Attackers can create numerous users to execute a for loop, causing the gas to exceed the limit.
+solution: Using a timelock. Using a withdrawal pattern.
+code: function function_1() public payable {require(msg.value > uint_1, "Need to be higher than highest bid"); require(payable(address_1).send(uint_1), "Failed to send Ether"); address_1 = msg.sender; uint_1 = msg.value;}
+
+buggy_type: TxOrigin
+key_code: tx.origin
+reason: Using tx.origin for authentication when contracts call functions of each other.
+result: Leading to phishing-like attacks.
+attack_method: The victim sends a transaction to the AttackContract address with enough gas, it triggers the fallback function, transferring all funds to the attacker's address via withdrawAll() function of the phishing contract.
+solution: Replacing tx.origin with msg.sender or implementing require(tx.origin == msg.sender).
+code: function function_3(address address_2, uint uint_2,address address_5) public {require(tx.origin == address_5); address_2.call.value(uint_2);}
+
+buggy_type: UncheckedSend
+key_code: transfer, public, payable
+reason: External users can call unauthorized Ether transfers if they are visible to the public, even without the correct credentials.
+result: Loss ether.
+attack_method: Users can call unauthorized Ether transfers and transfer ether from the vulnerable contract.
+solution: Using transfer() function rather than send().
+code: function function_2() payable public{msg.sender.transfer(1 ether);}

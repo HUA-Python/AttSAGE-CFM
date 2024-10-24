@@ -1,0 +1,34 @@
+buggy_type: NoneError
+key_code: None
+reason: None.
+result: None.
+attack_method: None.
+solution: None.
+
+buggy_type: OverflowUnderflow
+key_code: unit
+reason: Storing a value in an integer variable bigger or smaller than its limits.
+result: The resulting loss is immense and irreparable.
+attack_method: Attackers can manipulate function parameters by passing values outside their defined limits.
+solution: Verifying the arithmetic logic before and after execution. Using the Safe_Math library.
+
+buggy_type: Reentrancy
+key_code: call.value, msg.sender
+reason: The fallback mechanism of smart contracts exposes external calls in their interface, which attackers can exploit to invoke functions multiple times.
+result: Causing massive losses.
+attack_method: Attackers can exploit the external call to re-enter the called function before the program execution ends.
+solution: Using the built-in transfer() function when sending ether to external contracts. Ensuring that all logic that changes state variables happen before ether is sent out of the contract.
+
+buggy_type: TimestampDependency
+key_code: block.time_stamp
+reason: The current timestamp of the block can be used by contracts to trigger some time-dependent events.
+result: Miners change the timestamp to favor themselves.
+attack_method: Malicious miners can change the timestamp to favor themselves.
+solution: Block timestamps should not be the deciding factor for changing some important states.
+
+buggy_type: UnhandledExceptions
+key_code: send, call, call.value
+reason: The contract is terminated, its state is reverted, and false is returned to the caller contract when an exception is thrown by the callee contact.
+result: Leading to undesired behavior.
+attack_method: Attackers can use unchecked returned values within the caller contract to attack the contract.
+solution: Checking the return value of the send() instruction.
