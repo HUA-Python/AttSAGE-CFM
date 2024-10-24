@@ -22,4 +22,3 @@ conda install pyg -c pyg
 3. **Graph:** By normalizing the code and converting the intermediate representation into control flow graphs.
 
 ## Running Project
-* To run program, 
